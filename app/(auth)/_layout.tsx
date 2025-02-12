@@ -5,9 +5,8 @@ export default function AuthRoutesLayout() {
   const { isLoaded, isSignedIn } = useAuth();
 
   if (!isLoaded) return null;
-  if (isSignedIn) {
-    <Redirect href={"/(index)"} />;
-  }
+  if (isSignedIn) return <Redirect href="/(index)" />;
+
   return (
     <Stack>
       <Stack.Screen

@@ -2,50 +2,88 @@ import { ThemedText } from "@/components/ThemedText";
 import { BodyScrollView } from "@/components/ui/BodyScrollView";
 import Button from "@/components/ui/button";
 import TextInput from "@/components/ui/text-input";
-import { useSignIn } from "@clerk/clerk-expo";
+import { useSignUp } from "@clerk/clerk-expo";
 import { ClerkAPIError } from "@clerk/types";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { View } from "react-native";
 
 export default function SignUp() {
-  const { signIn, isLoaded, setActive } = useSignIn();
+  const { isLoaded, signUp, setActive } = useSignUp();
   const router = useRouter();
 
-  const [emailAddress, setEmailAddress] = useState<string>();
-  const [password, setPassword] = useState<string>();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [emailAddress, setEmailAddress] = useState("");
+  const [password, setPassword] = useState("");
+  const [pendingVerification, setPendingVerification] = useState(false);
+  const [code, setCode] = useState("");
   const [errors, setErrors] = useState<ClerkAPIError[]>([]);
-  const [code, setCode] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [pendingVerification, setPendingVerification] =
-    useState<boolean>(false);
+  const onSignUpPress = async () => {
+    if (!isLoaded) return;
+    setIsLoading(true);
+    setErrors([]);
 
-  const onSignInPress = async () => {};
+    try {
+      await signUp.create({
+        emailAddress,
+        password,
+      });
 
-  const onVerifyPress = async () => {};
+      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+
+      setPendingVerification(true);
+    } catch (err) {
+      console.error(JSON.stringify(err, null, 2));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onVerifyPress = async () => {
+    if (!isLoaded) return;
+    setIsLoading(true);
+
+    try {
+      const signUpAttempt = await signUp.attemptEmailAddressVerification({
+        code,
+      });
+
+      if (signUpAttempt.status === "complete") {
+        await setActive({ session: signUpAttempt.createdSessionId });
+        router.replace("/(index)");
+      } else {
+        console.error(signUpAttempt);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (pendingVerification) {
-    <BodyScrollView contentContainerStyle={{ padding: 20 }}>
-      <TextInput
-        value={code}
-        label={`Enter the verification we send to ${emailAddress}`}
-        placeholder="Enter Verification Code"
-        onChangeText={(code) => setCode(code)}
-      />
-      <Button
-        loading={isLoading}
-        disabled={!code || isLoading}
-        onPress={onVerifyPress}
-      >
-        Verify
-      </Button>
-      {errors.map((error) => (
-        <ThemedText key={error.longMessage} style={{ color: "red" }}>
-          {error.longMessage}
-        </ThemedText>
-      ))}
-    </BodyScrollView>;
+    return (
+      <BodyScrollView contentContainerStyle={{ padding: 20 }}>
+        <TextInput
+          value={code}
+          label={`Enter the verification we send to ${emailAddress}`}
+          placeholder="Enter Verification Code"
+          onChangeText={(code) => setCode(code)}
+        />
+        <Button
+          loading={isLoading}
+          disabled={!code || isLoading}
+          onPress={onVerifyPress}
+        >
+          Verify
+        </Button>
+        {errors.map((error) => (
+          <ThemedText key={error.longMessage} style={{ color: "red" }}>
+            {error.longMessage}
+          </ThemedText>
+        ))}
+      </BodyScrollView>
+    );
   }
 
   return (
@@ -66,15 +104,15 @@ export default function SignUp() {
         onChangeText={(pass) => setPassword(pass)}
       />
       <Button
-        onPress={onSignInPress}
+        onPress={onSignUpPress}
         loading={isLoading}
         disabled={!emailAddress || !password || isLoading}
       >
-        Continue
+        Sign Up
       </Button>
       {errors.map((error) => (
-        <ThemedText key={error.longMessage} style={{ color: "red" }}>
-          {error.longMessage}
+        <ThemedText key={error.longMessage} style={{ color: "black" }}>
+          {error.message}
         </ThemedText>
       ))}
     </BodyScrollView>

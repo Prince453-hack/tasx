@@ -1,10 +1,21 @@
 import { ThemedText } from "@/components/ThemedText";
-import { View } from "react-native";
+import { BodyScrollView } from "@/components/ui/BodyScrollView";
+import Button from "@/components/ui/button";
+import { useClerk } from "@clerk/clerk-expo";
+import { router } from "expo-router";
 
 export default function HomeScreen() {
+  const { signOut } = useClerk();
+
+  const useSignOut = () => {
+    signOut();
+    router.replace("/(auth)");
+  };
+
   return (
-    <View>
+    <BodyScrollView contentContainerStyle={{ padding: 20 }}>
       <ThemedText type="title">Home</ThemedText>
-    </View>
+      <Button onPress={useSignOut}>Sign Out</Button>
+    </BodyScrollView>
   );
 }
