@@ -40,6 +40,7 @@ export default function HomeRoutesLayout() {
         name="list/new/scan"
         options={{
           presentation: "fullScreenModal",
+          headerTitleAlign: "center",
           headerLargeTitle: false,
           headerTitle: "Scan QR Code",
           headerLeft: () => (

@@ -19,7 +19,7 @@ export default function HomeScreen() {
   const renderHeaderRight = () => {
     return (
       <Pressable onPress={() => router.push("/(index)/list/new")}>
-        <IconSymbol name="plus" color={appleBlue} />
+        <IconSymbol name="plus" color={appleBlue} size={30} />
       </Pressable>
     );
   };
@@ -27,7 +27,7 @@ export default function HomeScreen() {
   const renderHeaderLeft = () => {
     return (
       <Pressable onPress={() => router.push("/(index)/profile")}>
-        <IconSymbol name="gear" color={appleBlue} />
+        <IconSymbol name="gear" color={appleBlue} size={25} />
       </Pressable>
     );
   };
