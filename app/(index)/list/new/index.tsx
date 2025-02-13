@@ -54,7 +54,7 @@ export default function NewTaskScreen() {
         gap: 32,
       }}
     >
-      <View style={styles.draggable}></View>
+      <View style={styles.draggable} />
       <View
         style={{ alignItems: "center", gap: 16, padding: 20, marginTop: 15 }}
       >

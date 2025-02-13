@@ -1,16 +1,30 @@
-import { ThemedText } from "@/components/ThemedText";
 import { BodyScrollView } from "@/components/ui/BodyScrollView";
 import Button from "@/components/ui/button";
 import TextInput from "@/components/ui/text-input";
-import { appleBlue, borderColor } from "@/constants/Colors";
+import { appleBlue, backgroundColors, emojis } from "@/constants/Colors";
+import { useTaskCreation } from "@/context/TaskCreationContext";
 import { Link, Stack } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 export default function CreateScreen() {
   const handleCreateTask = () => {};
   const [taskName, setTaskName] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
+  const { selectedColor, setSelectedColor, setSelectedEmoji, selectedEmoji } =
+    useTaskCreation();
+
+  useEffect(() => {
+    setSelectedEmoji(emojis[Math.floor(Math.random() * emojis.length)]);
+    setSelectedColor(
+      backgroundColors[Math.floor(Math.random() * backgroundColors.length)]
+    );
+
+    return () => {
+      setSelectedEmoji("");
+      setSelectedColor("");
+    };
+  }, []);
 
   return (
     <>
@@ -33,24 +47,24 @@ export default function CreateScreen() {
           />
 
           <Link
-            href={{ pathname: "/" }}
-            style={[styles.emojiButton, { borderColor: "blue" }]}
+            href={{ pathname: "/emoji-picker" }}
+            style={[styles.emojiButton, { borderColor: selectedColor }]}
           >
             <View style={styles.emojiContainer}>
-              <Text>{"😊"}</Text>
+              <Text>{selectedEmoji}</Text>
             </View>
           </Link>
 
           <Link
-            href={{ pathname: "/" }}
-            style={[styles.emojiButton, { borderColor: "blue" }]}
+            href={{ pathname: "/color-picker" }}
+            style={[styles.emojiButton, { borderColor: selectedColor }]}
           >
             <View style={styles.emojiContainer}>
               <View
                 style={{
                   width: 24,
                   height: 24,
-                  backgroundColor: "blue",
+                  backgroundColor: selectedColor,
                   borderRadius: 100,
                 }}
               />
