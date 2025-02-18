@@ -1,19 +1,35 @@
-import { ThemedText } from "@/components/ThemedText";
+import IconCircle from "@/components/IconCircle";
 import { BodyScrollView } from "@/components/ui/BodyScrollView";
 import Button from "@/components/ui/button";
 import { IconSymbol } from "@/components/ui/IconSymbol";
-import { appleBlue } from "@/constants/Colors";
-import { useClerk } from "@clerk/clerk-expo";
-import { router, Stack, useRouter } from "expo-router";
-import { Pressable } from "react-native";
+import { appleBlue, backgroundColors } from "@/constants/Colors";
+import { useTaskListIds } from "@/stores/TaskListsStore";
+import { Link, Stack, useRouter } from "expo-router";
+import { FlatList, Platform, Pressable, StyleSheet } from "react-native";
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { signOut } = useClerk();
+  const taskListIds = useTaskListIds();
 
-  const useSignOut = () => {
-    signOut();
-    router.replace("/(auth)");
+  const renderEmptyList = () => {
+    return (
+      <BodyScrollView
+        style={styles.emptyStateContainer}
+        contentContainerStyle={{ alignItems: "center" }}
+      >
+        <IconCircle
+          emoji="📪"
+          backgroundColor={
+            backgroundColors[
+              Math.floor(Math.random() * backgroundColors.length)
+            ]
+          }
+        />
+        <Button onPress={() => router.push("/list/new")} variant="ghost">
+          Create your first task
+        </Button>
+      </BodyScrollView>
+    );
   };
 
   const renderHeaderRight = () => {
@@ -40,10 +56,37 @@ export default function HomeScreen() {
           headerLeft: renderHeaderLeft,
         }}
       />
-      <BodyScrollView contentContainerStyle={{ padding: 20 }}>
-        <ThemedText type="title">Home</ThemedText>
-        <Button onPress={useSignOut}>Sign Out</Button>
-      </BodyScrollView>
+      <FlatList
+        data={taskListIds}
+        contentContainerStyle={styles.listContainer}
+        ListEmptyComponent={renderEmptyList}
+        contentInsetAdjustmentBehavior="automatic"
+        renderItem={({ item: taskId }) => (
+          <Link
+            href={{ pathname: "/(index)/list/[taskId]", params: { taskId } }}
+          >
+            {taskId}
+          </Link>
+        )}
+      />
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  listContainer: {
+    padding: 8,
+  },
+  emptyStateContainer: {
+    gap: 8,
+    paddingTop: 100,
+  },
+  headerButton: {
+    padding: 8,
+    paddingRight: 0,
+    marginHorizontal: Platform.select({ web: 16, default: 0 }),
+  },
+  headerButtonLeft: {
+    paddingLeft: 0,
+  },
+});

@@ -54,7 +54,7 @@ const {
 
 const useStoreId = (listId: string) => TASK_ID_PREFIX + listId;
 
-export default function ShoppingListStore({
+export default function TaskListStore({
   listId,
   initialContentJson,
 }: {

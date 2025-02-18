@@ -1,5 +1,6 @@
 import Button from "@/components/ui/button";
 import { TaskCreationProvider } from "@/context/TaskCreationContext";
+import TaskListsStore from "@/stores/TaskListsStore";
 import { useUser } from "@clerk/clerk-expo";
 import { Redirect, Stack, useRouter } from "expo-router";
 import { Provider as TinyBaseProvider } from "tinybase/ui-react";
@@ -14,6 +15,7 @@ export default function HomeRoutesLayout() {
 
   return (
     <TinyBaseProvider>
+      <TaskListsStore />
       <TaskCreationProvider>
         <Stack>
           <Stack.Screen

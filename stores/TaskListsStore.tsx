@@ -2,10 +2,10 @@ import { useUser } from "@clerk/clerk-expo";
 import * as UIReact from "tinybase/ui-react/with-schemas";
 import { createMergeableStore, NoValuesSchema } from "tinybase/with-schemas";
 import { useCreateClientPersisterAndStart } from "./persistence/useCreateClientPersisterAndStart";
-import { useCreateServerSynchronizerAndStart } from "./synchronization/useServerSynchronizationAndStart";
-import ShoppingListStore from "./TaskListStore";
 import { useCallback } from "react";
 import { randomUUID } from "expo-crypto";
+import TaskListStore from "./TaskListStore";
+import { useCreateServerSynchronizerAndStart } from "./synchronization/useServerSynchronizationAndStart";
 
 const TASK_ID_PREFIX = "taskListsStore-";
 
@@ -48,10 +48,14 @@ export const useAddTaskListCallback = () => {
           },
         ]),
       });
+
+      return id;
     },
     [store]
   );
 };
+
+export const useTaskListIds = () => useRowIds("lists", useStoreId());
 
 export default function TaskListsStore() {
   const storeId = useStoreId();
@@ -67,7 +71,7 @@ export default function TaskListsStore() {
 
   return Object.entries(currentUserList).map(
     ([listId, { initialContentJson }]) => (
-      <ShoppingListStore
+      <TaskListStore
         listId={listId}
         initialContentJson={initialContentJson}
         key={listId}

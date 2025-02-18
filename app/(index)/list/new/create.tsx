@@ -3,16 +3,19 @@ import Button from "@/components/ui/button";
 import TextInput from "@/components/ui/text-input";
 import { appleBlue, backgroundColors, emojis } from "@/constants/Colors";
 import { useTaskCreation } from "@/context/TaskCreationContext";
-import { Link, Stack } from "expo-router";
+import { useAddTaskListCallback } from "@/stores/TaskListsStore";
+import { Link, Stack, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 export default function CreateScreen() {
-  const handleCreateTask = () => {};
+  const router = useRouter();
   const [taskName, setTaskName] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
   const { selectedColor, setSelectedColor, setSelectedEmoji, selectedEmoji } =
     useTaskCreation();
+
+  const useAddTaskList = useAddTaskListCallback();
 
   useEffect(() => {
     setSelectedEmoji(emojis[Math.floor(Math.random() * emojis.length)]);
@@ -25,6 +28,19 @@ export default function CreateScreen() {
       setSelectedColor("");
     };
   }, []);
+
+  const handleCreateTask = () => {
+    if (!taskName) return;
+
+    const taskId = useAddTaskList(
+      taskName,
+      taskDescription,
+      selectedEmoji,
+      selectedColor
+    );
+
+    router.replace({ pathname: "/list/[taskId]", params: { taskId } });
+  };
 
   return (
     <>
