@@ -1,4 +1,5 @@
 import IconCircle from "@/components/IconCircle";
+import TaskListItem from "@/components/TaskListItem";
 import { BodyScrollView } from "@/components/ui/BodyScrollView";
 import Button from "@/components/ui/button";
 import { IconSymbol } from "@/components/ui/IconSymbol";
@@ -61,13 +62,14 @@ export default function HomeScreen() {
         contentContainerStyle={styles.listContainer}
         ListEmptyComponent={renderEmptyList}
         contentInsetAdjustmentBehavior="automatic"
-        renderItem={({ item: taskId }) => (
-          <Link
-            href={{ pathname: "/(index)/list/[taskId]", params: { taskId } }}
-          >
-            {taskId}
-          </Link>
-        )}
+        // renderItem={({ item: taskId }) => (
+        //   <Link
+        //     href={{ pathname: "/(index)/list/[taskId]", params: { taskId } }}
+        //   >
+        //     <TaskListItem listId={taskId} />
+        //   </Link>
+        // )}
+        renderItem={({ item: taskId }) => <TaskListItem listId={taskId} />}
       />
     </>
   );

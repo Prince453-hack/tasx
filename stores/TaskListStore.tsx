@@ -1,5 +1,5 @@
 import * as UIReact from "tinybase/ui-react/with-schemas";
-import { createMergeableStore } from "tinybase/with-schemas";
+import { createMergeableStore, Value } from "tinybase/with-schemas";
 import { useCreateClientPersisterAndStart } from "./persistence/useCreateClientPersisterAndStart";
 import { useCreateServerSynchronizerAndStart } from "./synchronization/useServerSynchronizationAndStart";
 import { useUserIdAndNickname } from "@/hooks/useNickname";
@@ -53,6 +53,27 @@ const {
 } = UIReact as UIReact.WithSchemas<Schemas>;
 
 const useStoreId = (listId: string) => TASK_ID_PREFIX + listId;
+
+export const useTaskListValue = <ValueId extends TaskListValueId>(
+  listId: string,
+  valueId: ValueId
+): [
+  Value<Schemas[1], ValueId> | null,
+  (value: Value<Schemas[1], ValueId>) => void
+] => {
+  const storeValue = useValue(valueId, useStoreId(listId));
+  return [
+    storeValue !== undefined
+      ? storeValue
+      : (null as Value<Schemas[1], ValueId>),
+    useSetValueCallback(
+      valueId,
+      (value: Value<Schemas[1], ValueId>) => value,
+      [],
+      useStoreId(listId)
+    ),
+  ];
+};
 
 export default function TaskListStore({
   listId,
